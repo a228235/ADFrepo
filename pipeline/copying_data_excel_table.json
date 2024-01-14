@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "lkp_config_sheets",
+				"description": "lkp",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
