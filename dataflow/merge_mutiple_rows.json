@@ -1,0 +1,83 @@
+{
+	"name": "merge_mutiple_rows",
+	"properties": {
+		"description": "how to merge multiple rows in to single row using mapping data flow in azure data factory",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "delimited_file_ds",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ADLS_LS",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as integer,",
+				"          type as string,",
+				"          name as string,",
+				"          ppu as double,",
+				"          batter_id as short,",
+				"          batter_type as string,",
+				"          topping_id as short,",
+				"          topping_type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 aggregate(groupBy(id,",
+				"          type,",
+				"          name,",
+				"          batter_id,",
+				"          batter_type,",
+				"          ppu),",
+				"     topping = collect(topping_type)) ~> aggregate1",
+				"aggregate1 derive(topping = replace(replace(toString(topping),']'),'[')) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     fileSystem: 'samplecontainer',",
+				"     folderPath: 'output',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['mergerows.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          type,",
+				"          name,",
+				"          batter_id,",
+				"          batter_type,",
+				"          ppu,",
+				"          topping",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

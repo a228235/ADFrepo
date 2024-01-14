@@ -1,0 +1,47 @@
+{
+	"name": "increment_keys",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "increment_keys",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"allemp": {
+								"FolderName": "increment",
+								"FileName": "allemp.csv"
+							},
+							"allemp2": {
+								"FolderName": "increment",
+								"FileName": "allemp.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "None",
+					"cacheSinks": {
+						"firstRowOnly": true
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-01-08T12:14:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

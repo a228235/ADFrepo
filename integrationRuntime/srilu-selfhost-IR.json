@@ -1,0 +1,12 @@
+{
+	"name": "srilu-selfhost-IR",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"linkedInfo": {
+				"resourceId": "/subscriptions/e3fdc694-417b-44fa-9f88-541270829fbf/resourcegroups/AzureDev/providers/Microsoft.DataFactory/factories/Srilatha-AzureADF/integrationruntimes/selfhosted-srilatha",
+				"authorizationType": "Rbac"
+			}
+		}
+	}
+}

@@ -1,0 +1,215 @@
+{
+	"name": "json1_csv",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "delimited_output_ds",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "delimited_output_ds",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "delimited_output_ds",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "flatten2"
+				},
+				{
+					"name": "flatten3"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "flatten4"
+				},
+				{
+					"name": "flatten5"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          batters as (batter as (id as short, type as string)[]),",
+				"          id as short,",
+				"          name as string,",
+				"          ppu as double,",
+				"          topping as (id as short, type as string)[],",
+				"          type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source1",
+				"source(output(",
+				"          id as short,",
+				"          image as (height as short, url as string, width as short),",
+				"          name as string,",
+				"          thumbnail as (height as short, url as string, width as short),",
+				"          type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source2",
+				"source(output(",
+				"          items as (item as (batters as (batter as (id as short, type as string)[]), id as short, name as string, ppu as double, topping as (id as short, type as string)[], type as string)[])",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source3",
+				"source1 foldDown(unroll(batters.batter, batters.batter),",
+				"     mapColumn(",
+				"          id,",
+				"          type,",
+				"          name,",
+				"          ppu,",
+				"          batters_id = batters.batter.id,",
+				"          batters_type = batters.batter.type,",
+				"          topping",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 foldDown(unroll(topping, topping),",
+				"     mapColumn(",
+				"          id,",
+				"          type,",
+				"          name,",
+				"          ppu,",
+				"          batters_id,",
+				"          batters_type,",
+				"          topping_id = topping.id,",
+				"          topping_type = topping.type",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> flatten2",
+				"aggregate1 foldDown(unroll(image),",
+				"     mapColumn(",
+				"          id = image.id,",
+				"          type = image.type,",
+				"          name = image.name,",
+				"          image_url = image.image.url,",
+				"          image_width = image.image.width,",
+				"          image_height = image.image.height,",
+				"          thumbnail_url = image.thumbnail.url,",
+				"          thumbnail_width = image.thumbnail.width,",
+				"          thumbnail_height = image.thumbnail.height",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten3",
+				"source2 aggregate(image = collect(@(id=id,type=type,name=name,image=image,thumbnail=thumbnail))) ~> aggregate1",
+				"source3 foldDown(unroll(items.item),",
+				"     mapColumn(",
+				"          items_id = items.item.id,",
+				"          items_type = items.item.type,",
+				"          items_name = items.item.name,",
+				"          batter_id = items.item.batters.batter,",
+				"          topping_id = items.item.topping",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten4",
+				"flatten4 foldDown(unroll(batter_id),",
+				"     mapColumn(",
+				"          items_id,",
+				"          items_type,",
+				"          items_name,",
+				"          batter_id = batter_id.id,",
+				"          batter_type = batter_id.type,",
+				"          topping_id = topping_id.id,",
+				"          topping_type = topping_id.type",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten5",
+				"flatten2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['sample_json2.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"flatten3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['sample_json3.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          type,",
+				"          name,",
+				"          image_url,",
+				"          image_width,",
+				"          image_height,",
+				"          thumbnail_url,",
+				"          thumbnail_width,",
+				"          thumbnail_height",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink2",
+				"flatten5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['json_sample4.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          items_id,",
+				"          items_type,",
+				"          items_name,",
+				"          batter_id,",
+				"          batter_type,",
+				"          topping_id,",
+				"          topping_type",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink3"
+			]
+		}
+	}
+}

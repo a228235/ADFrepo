@@ -1,0 +1,67 @@
+{
+	"name": "fixed_length_files",
+	"properties": {
+		"description": "5. Process fixed length text files by Azure Data Factory mapping data flows",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "delimited_file_ds",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "delimited_output_ds",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {FirstName     LastName     Age} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(First_Name = trim(substring({FirstName     LastName     Age},1,14),'     '),",
+				"          Last_Name = trim(substring({FirstName     LastName     Age},15,13),'     '),",
+				"          Age = substring({FirstName     LastName     Age},28,11)) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          First_Name,",
+				"          Last_Name,",
+				"          Age",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['emp.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          First_Name,",
+				"          Last_Name,",
+				"          Age",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

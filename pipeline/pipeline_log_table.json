@@ -1,0 +1,127 @@
+{
+	"name": "pipeline_log_table",
+	"properties": {
+		"activities": [
+			{
+				"name": "pipeline_runs",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://management.azure.com/subscriptions/e3fdc694-417b-44fa-9f88-541270829fbf/resourceGroups/azuredev/providers/Microsoft.DataFactory/factories/sriluadf/queryPipelineRuns?api-version=2018-06-01",
+					"method": "POST",
+					"body": {
+						"lastUpdatedAfter": "2023-12-01T00:00:44.3345758Z",
+						"lastUpdatedBefore": "2024-01-31T00:00:48.3686473Z"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://management.azure.com/"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "pipeline_runs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('pipeline_runs').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[getlogdetails]",
+								"storedProcedureParameters": {
+									"durationInMs": {
+										"value": {
+											"value": "@item().durationInMs",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"message": {
+										"value": {
+											"value": "@item().message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"pipelinename": {
+										"value": {
+											"value": "@item().pipelineName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"runend": {
+										"value": {
+											"value": "@item().runEnd",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"runid": {
+										"value": {
+											"value": "@item().runId",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"runStart": {
+										"value": {
+											"value": "@item().runStart",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"status": {
+										"value": {
+											"value": "@item().status",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzSQL_LS",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-01-07T17:09:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

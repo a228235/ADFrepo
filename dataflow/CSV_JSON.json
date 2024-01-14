@@ -1,0 +1,139 @@
+{
+	"name": "CSV_JSON",
+	"properties": {
+		"description": "loading csv file as Json with nested hierarchy using azure data factory mapping data flows.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "delimited_file_ds",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Json_output_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Json_output_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "aggregate3"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as integer,",
+				"          type as string,",
+				"          name as string,",
+				"          ppu as double,",
+				"          batter_id as integer,",
+				"          batter_type as string,",
+				"          topping_id as integer,",
+				"          topping_type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          data as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source1 derive(topping = @(id=topping_id,",
+				"          type=topping_type),",
+				"          batters = @(batter=@(id=batter_id,",
+				"          type=batter_type))) ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(id,",
+				"          type,",
+				"          name,",
+				"          ppu,",
+				"          batters),",
+				"     topping = collect(topping)) ~> aggregate1",
+				"aggregate1 aggregate(groupBy(id,",
+				"          type,",
+				"          name,",
+				"          topping,",
+				"          ppu),",
+				"     batter = collect(batters.batter)) ~> aggregate2",
+				"source2 derive(data = split(data,',')) ~> derivedColumn2",
+				"derivedColumn2 derive(key = 'X') ~> derivedColumn3",
+				"derivedColumn3 aggregate(groupBy(key),",
+				"     Data = collect(data)) ~> aggregate3",
+				"aggregate3 select(mapColumn(",
+				"          Data",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"aggregate2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['sampledata.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          type,",
+				"          name,",
+				"          ppu,",
+				"          batters = batter,",
+				"          topping",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['sample_1.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Data",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink2"
+			]
+		}
+	}
+}

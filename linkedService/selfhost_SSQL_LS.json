@@ -1,0 +1,16 @@
+{
+	"name": "selfhost_SSQL_LS",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=KPI-KOMMINENI\\SQLEXPRESS;initial catalog=Employee;user id=sa",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI0NTEzMzE4ZS1hYTMwLTRhNGEtOWE3My0zNzk3MGI5NWMzMzEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "srilu-selfhost-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

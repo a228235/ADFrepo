@@ -1,0 +1,9 @@
+{
+	"name": "SriluADF",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a00979e4-d33e-426b-ba6c-24edbdac0936",
+		"tenantId": "a07bb132-24b7-43d1-a61e-5786af9cad2d"
+	}
+}

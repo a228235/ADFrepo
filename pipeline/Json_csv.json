@@ -1,0 +1,49 @@
+{
+	"name": "Json_csv",
+	"properties": {
+		"description": "converting json files to csv files",
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "json1_csv",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"FileName": "json_sample2.json"
+							},
+							"source2": {
+								"FileName": "json_sample3.json"
+							},
+							"source3": {
+								"FileName": "json_sample4.json"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "None",
+					"cacheSinks": {
+						"firstRowOnly": true
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-12-31T11:17:50Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
