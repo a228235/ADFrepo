@@ -1,0 +1,16 @@
+{
+	"name": "Rest_Token_Pages_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Rest_Token_Pages",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "/api/users?page={value}"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

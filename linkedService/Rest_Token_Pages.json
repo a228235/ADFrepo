@@ -1,11 +1,11 @@
 {
-	"name": "RestAPI_LS",
+	"name": "Rest_Token_Pages",
 	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://dummy.restapiexample.com/api/v1/employees",
+			"url": "http://restapi.adequateshop.com",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}

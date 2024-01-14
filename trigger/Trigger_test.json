@@ -1,0 +1,28 @@
+{
+	"name": "Trigger_test",
+	"properties": {
+		"description": "for testing purpose",
+		"annotations": [
+			"Emp"
+		],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "CopyPipeline",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 5,
+				"startTime": "2023-12-19T21:45:00",
+				"endTime": "2023-12-19T21:59:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"name": "Json_dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "example_2.json",
+				"folderPath": "input",
+				"fileSystem": "samplecontainer"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,7 @@
+{
+	"name": "selfhosted-srilatha",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "creating new IR to connect with on premises."
+	}
+}

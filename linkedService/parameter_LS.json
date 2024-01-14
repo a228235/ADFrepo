@@ -1,0 +1,29 @@
+{
+	"name": "parameter_LS",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"servername": {
+				"type": "String"
+			},
+			"DBname": {
+				"type": "string"
+			},
+			"username": {
+				"type": "string"
+			},
+			"password": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Data Source=@{linkedService().servername};Initial Catalog=@{linkedService().DBname};User ID=@{linkedService().username};Password=@{linkedService().password}"
+		},
+		"connectVia": {
+			"referenceName": "selfhosted-srilatha",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"name": "Srilatha-AzureADF",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ce1bc4ca-441a-428c-b67b-1b7bfafe150c",
+		"tenantId": "a07bb132-24b7-43d1-a61e-5786af9cad2d"
+	}
+}

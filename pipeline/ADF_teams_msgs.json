@@ -1,0 +1,105 @@
+{
+	"name": "ADF_teams_msgs",
+	"properties": {
+		"activities": [
+			{
+				"name": "set JSON",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Messagecard",
+					"value": {
+						"value": "{\n    \"@type\": \"MessageCard\",\n    \"@context\": \"http://schema.org/extensions\",\n    \"themeColor\": \"0076D7\",\n    \"summary\": \"Pipeline status alert message​​​​\",\n    \"sections\": [\n        {\n            \"activityTitle\": \"Pipeline execution alert​​​​\",\n            \"facts\": [\n                {\n                    \"name\": \"Subscription Id:\",\n                    \"value\": \"@{pipeline().parameters.subscription}\"\n                },\n                {\n                    \"name\": \"Resource Group:\",\n                    \"value\": \"@{pipeline().parameters.resourceGroup}\"\n                },\n                {\n                    \"name\": \"Data Factory Name:\",\n                    \"value\": \"@{pipeline().DataFactory}\"\n                },\n                {\n                    \"name\": \"Pipeline RunId:\",\n                    \"value\": \"@{pipeline().parameters.runId}\"\n                },\n                {\n                    \"name\": \"Pipline Name:\",\n                    \"value\": \"@{pipeline().parameters.name}\"\n                },\n                {\n                    \"name\": \"Pipeline Status:\",\n                    \"value\": \"@{pipeline().parameters.status}\"\n                },\n                {\n                    \"name\": \"Execution Start Time (UTC):\",\n                    \"value\": \"@{pipeline().parameters.triggerTime}\"\n                },\n                {\n                    \"name\": \"Execution Finish Time (UTC):\",\n                    \"value\": \"@{pipeline().parameters.executionEndTime}\"\n                },\n                {\n                    \"name\": \"Execution Duration (s):\",\n                    \"value\": \"@{pipeline().parameters.runDuration}\"\n                },\n                {\n                    \"name\": \"Message:\",\n                    \"value\": \"@{pipeline().parameters.message}\"\n                },\n                {\n                    \"name\": \"Notification Time (UTC):\",\n                    \"value\": \"@{utcnow()}\"\n                }\n            ],\n            \"markdown\": true\n        }\n    ],\n    \"potentialAction\": [\n        {\n            \"@type\": \"OpenUri\",\n            \"name\": \"View pipeline run\",\n            \"targets\": [\n                {\n                    \"os\": \"default\",\n                    \"uri\": \"@{concat('https://synapse.azure.com/monitoring/pipelineruns/',pipeline().parameters.runId,'?factory=/subscriptions/',pipeline().parameters.subscription,'/resourceGroups/',pipeline().parameters.resourceGroup,'/providers/Microsoft.DataFactory/factories/',pipeline().DataFactory)}\"\n                }\n            ]\n        }\n    ]\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Invoke Teams Webhook Url",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "set JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@pipeline().parameters.webhhok_url",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "@json(variables('Messagecard'))",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"webhhok_url": {
+				"type": "string",
+				"defaultValue": "https://synh.webhook.office.com/webhookb2/82b07926-1e5b-4118-9d03-2dfc9ce5f686@a5c5a766-129a-47bb-924c-43805e856501/IncomingWebhook/509acfbf7e9c4989a53acec05645c393/e17fcfac-97ef-4fe8-858b-43d4af8b16f5"
+			},
+			"subscription": {
+				"type": "string",
+				"defaultValue": "Specify subscription id for the pipeline"
+			},
+			"resourceGroup": {
+				"type": "string",
+				"defaultValue": "Specify resource group name for the pipeline"
+			},
+			"runId": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').output['pipelineRunId']"
+			},
+			"name": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').output['pipelineName']"
+			},
+			"triggerTime": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').ExecutionStartTime"
+			},
+			"status": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').Status"
+			},
+			"message": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').Error['message']"
+			},
+			"executionEndTime": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').ExecutionEndTime"
+			},
+			"runDuration": {
+				"type": "string",
+				"defaultValue": "@activity('Specify name of the calling pipeline').Duration"
+			}
+		},
+		"variables": {
+			"Messagecard": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-12-27T10:14:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
