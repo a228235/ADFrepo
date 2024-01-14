@@ -5,7 +5,7 @@
 		"annotations": [
 			"Emp"
 		],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
