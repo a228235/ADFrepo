@@ -21,6 +21,7 @@
 			},
 			{
 				"name": "Invoke Teams Webhook Url",
+				"description": "invoking the rest api url",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
