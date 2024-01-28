@@ -1,0 +1,9 @@
+{
+	"name": "Srilatha-ADF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e1c41493-a68a-4d56-b702-7c2c2b1a3f51",
+		"tenantId": "845704e8-53ca-42b9-9896-5c0f2b0bbf6a"
+	}
+}
